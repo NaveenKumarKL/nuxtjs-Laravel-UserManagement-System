@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Employee;
 use Illuminate\Http\Request;
+// use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -15,7 +17,10 @@ class EmployeeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
+
     {
+
+
         $Employee = Employee::all()->jsonSerialize();
         return response()->json($Employee);
     }
@@ -28,17 +33,14 @@ class EmployeeController extends Controller
     public function create(Request $request)
     {
 
-
-
-
-        $user = $request->file('image')->getClientOriginalName();
-        $fileName = time() . '.' . $request->file('image')->getClientOriginalExtension();
-        $request->file('image')->move(public_path('upload'), $fileName);
-        print_r($fileName);
-
-
+        $image = request()->file('image');
+        $imageName = $image->getClientOriginalName();
+        $imageName = time() . '_' . $imageName;
+        $image->move(public_path('/images'), $imageName);
+        print_r($imageName);
 
         $latest = Employee::latest()->first();
+        print_r($latest);
 
         if (!$latest) {
             $receipt = 'ZE0001';
@@ -46,11 +48,6 @@ class EmployeeController extends Controller
             $string = preg_replace("/[^0-9\.]/", '', $latest->employeeid);
             $receipt = 'ZE' . sprintf('%04d', $string + 1);
         }
-
-
-
-        // $request->file->move(public_path('upload'), $fileName);
-
         Employee::create([
             'name' => $request->name,
             'designation' => $request->designation,
@@ -58,13 +55,13 @@ class EmployeeController extends Controller
             'employeeid' => $receipt,
             'phone' => $request->phone,
             'status' => $request->status,
-            'image' => $user,
+            'image' => 'images/' . $imageName,
             'renumuration' => $request->renumuration,
             'address' => $request->address,
 
 
         ]);
-        // return response()->json('The Employee data created successfully');
+        return response()->json('The Employee data created successfully');
     }
 
     /**
@@ -73,9 +70,18 @@ class EmployeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($id, Request $request)
     {
-        //
+        $Employee = Employee::find($id);
+        // $Employee->update($request->status);
+        $update = 'Terminated';
+        // DB::table('employees')->where('id', $Employee->id)->update(['status', $update]);
+        if ($Employee) {
+            $Employee->status =  $update;
+            $Employee->save();
+        }
+
+        return $Employee;
     }
 
     /**
@@ -111,10 +117,40 @@ class EmployeeController extends Controller
     public function update($id, Request $request)
     {
         $Employee = Employee::find($id);
-        $Employee->update($request->all());
 
-        return response()->json('The Service successfully updated');
+        // to delete photo
+
+        $currentPhoto = $Employee->image;
+
+        if (file_exists($currentPhoto)) {
+
+            @unlink($currentPhoto);
+        }
+
+        // This is like $request->all except it doesn't set the avatar
+        // You "fill" the new data so that it doesn't call save yet.
+        $Employee->fill($request->except('image'));
+
+        // If there is a file, we set the avatar
+        if ($request->file('image')) {
+
+            $image = request()->file('image');
+            $imageName = $image->getClientOriginalName();
+            $imageName = time() . '_' . $imageName;
+            $image->move(public_path('/images'), $imageName);
+            print_r($imageName);
+
+
+
+            $Employee->image = 'images/' . $imageName;
+        }
+
+        // Then we just save
+        $Employee->save();
     }
+
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -123,9 +159,25 @@ class EmployeeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
+
+
     {
+
         $Employee = Employee::find($id);
+
         $Employee->delete();
-        return response()->json('The  Service successfully deleted');
+
+        $currentPhoto = $Employee->image;
+
+
+
+        if (file_exists($currentPhoto)) {
+
+            @unlink($currentPhoto);
+        }
+
+        return [
+            'message' => 'Data deleted successfully'
+        ];
     }
 }
