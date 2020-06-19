@@ -20,6 +20,8 @@ class CreateEmployeesTable extends Migration
             $table->string('joindate');
             $table->string('designation');
             $table->string('phone');
+            // $table->string('imaged')->nullable();
+            // $table->string('imagedesd')->nullable();
             $table->string('image')->nullable();
             $table->string('address');
             $table->string('status');
