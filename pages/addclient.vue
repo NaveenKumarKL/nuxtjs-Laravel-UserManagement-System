@@ -107,6 +107,7 @@
                           item-text="servicename"
                           item-value="servicename"
                           :rules="[v => !!v || 'Item is required']"
+                          item-color="orange"
                           label="Service"
                           required
                         ></v-select>
