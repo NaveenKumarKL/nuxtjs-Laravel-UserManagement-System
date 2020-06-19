@@ -36,9 +36,41 @@ Route::post('/cdestroy/{id}', 'clientController@destroy');
 Route::get('/cedit/{id}', 'clientController@edit');
 Route::post('/cupdate/{id}', 'clientController@update');
 
+
 // employee
 Route::Post('/eregister', 'EmployeeController@create');
 Route::get('/eshow', 'EmployeeController@index');
 Route::post('/edestroy/{id}', 'EmployeeController@destroy');
 Route::get('/eedit/{id}', 'EmployeeController@edit');
 Route::post('/eupdate/{id}', 'EmployeeController@update');
+Route::post('/eterminate/{id}', 'EmployeeController@store');
+
+
+// Associates
+Route::Post('/aregister', 'AssociateController@create');
+Route::get('/ashow', 'AssociateController@index');
+Route::post('/adestroy/{id}', 'AssociateController@destroy');
+Route::get('/aedit/{id}', 'AssociateController@edit');
+Route::post('/aupdate/{id}', 'AssociateController@update');
+
+// contractor
+Route::Post('/oregister', 'ContractorController@create');
+Route::get('/oshow', 'ContractorController@index');
+Route::post('/odestroy/{id}', 'ContractorController@destroy');
+Route::get('/oedit/{id}', 'ContractorController@edit');
+Route::post('/oupdate/{id}', 'ContractorController@update');
+
+
+// invoice
+Route::Post('/iregister', 'InvoiceController@create');
+Route::get('/ishow', 'InvoiceController@index');
+Route::post('/idestroy/{id}', 'InvoiceController@destroy');
+Route::get('/iedit/{id}', 'InvoiceController@show');
+Route::post('/iupdate/{id}', 'InvoiceController@update');
+
+// tax
+Route::Post('/tregister', 'TaxController@create');
+Route::get('/tshow', 'TaxController@index');
+Route::post('/tdestroy/{id}', 'TaxController@destroy');
+// Route::get('/iedit/{id}', 'InvoiceController@show');
+Route::post('/tupdate/{id}', 'TaxController@update');
